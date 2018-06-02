@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">HealthManagement</string>
+    <string name="activity_home_text_1">%1$s 先生，你好</string>
+    <string name="record_date_place_holder">录入日期：%1$s</string>
+    <string name="height_place_holder">%1$s cm</string>
+    <string name="weight_place_holder">%1$s kg</string>
+    <string name="query_result_title_place_holder">查询结果(%1$s)</string>
+</resources>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="?android:listPreferredItemPaddingLeft"
+    android:paddingRight="?android:listPreferredItemPaddingRight"
+    android:paddingTop="20dp"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:listPreferredItemHeightSmall"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="账号：" />
+
+        <EditText
+            android:id="@+id/user_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_custom_edit_text"
+            android:hint="输入账号"
+            android:inputType="number" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:listPreferredItemHeightSmall"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="密码：" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_custom_edit_text"
+            android:hint="输入密码"
+            android:inputType="textPassword" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/commit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/selector_custom_button"
+        android:gravity="center"
+        android:text="登录"
+        android:textColor="@android:color/white" />
+
+    <CheckBox
+        android:id="@+id/remember_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:checked="true"
+        android:text="记住密码" />
+
+    <Button
+        android:id="@+id/select_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="选号登录" />
+</LinearLayout>
