@@ -13,6 +13,7 @@ import group.tonight.healthmanagement.dao.DaoSession;
 import group.tonight.healthmanagement.dao.HealthDataBeanDao;
 import group.tonight.healthmanagement.dao.SportDataBeanDao;
 import group.tonight.healthmanagement.dao.UserBeanDao;
+import group.tonight.healthmanagement.dao.StepDataBeanDao;
 
 @Entity
 public class UserBean implements Serializable {
@@ -30,6 +31,9 @@ public class UserBean implements Serializable {
 
     @ToMany(referencedJoinProperty = "uid")
     private List<SportDataBean> sportDataBeans;
+
+    @ToMany(referencedJoinProperty = "uid")
+    private List<StepDataBean> stepDataBeans;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -41,6 +45,14 @@ public class UserBean implements Serializable {
     public UserBean(Long id, Long userId, String userName, String gender,
             String birthday, String password) {
         this.id = id;
+        this.userId = userId;
+        this.userName = userName;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.password = password;
+    }
+
+    public UserBean(Long userId, String userName, String gender, String birthday, String password) {
         this.userId = userId;
         this.userName = userName;
         this.gender = gender;
@@ -199,6 +211,34 @@ public class UserBean implements Serializable {
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getUserBeanDao() : null;
+    }
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 1550191955)
+    public List<StepDataBean> getStepDataBeans() {
+        if (stepDataBeans == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            StepDataBeanDao targetDao = daoSession.getStepDataBeanDao();
+            List<StepDataBean> stepDataBeansNew = targetDao._queryUserBean_StepDataBeans(id);
+            synchronized (this) {
+                if (stepDataBeans == null) {
+                    stepDataBeans = stepDataBeansNew;
+                }
+            }
+        }
+        return stepDataBeans;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 49920678)
+    public synchronized void resetStepDataBeans() {
+        stepDataBeans = null;
     }
 
 }

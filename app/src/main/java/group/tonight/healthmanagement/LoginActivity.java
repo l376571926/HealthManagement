@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.select_user).setOnClickListener(this);
         findViewById(R.id.commit).setOnClickListener(this);
 
+        //初始化数据
         if (mPreferences.getBoolean(PREF_FIRST_LAUNCHER, true)) {
             mPreferences.edit()
                     .putBoolean(PREF_FIRST_LAUNCHER, false)
@@ -88,6 +89,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             healthTypeBeanList.add(new HealthDataBean("血液", true));
             for (HealthDataBean healthTypeBean : healthTypeBeanList) {
                 App.getDaoSession().getHealthDataBeanDao().save(healthTypeBean);
+            }
+
+            List<UserBean> userBeanList = new ArrayList<>();
+            userBeanList.add(new UserBean(111111L,"李逍遥","男","1997-03-05","12345678"));
+            userBeanList.add(new UserBean(222222L,"龙阳","男","1997-03-05","12345678"));
+            userBeanList.add(new UserBean(333333L,"蒙毅","男","1997-03-05","12345678"));
+            userBeanList.add(new UserBean(444444L,"明台","男","1997-03-05","12345678"));
+            userBeanList.add(new UserBean(555555L,"景天","男","1997-03-05","12345678"));
+            userBeanList.add(new UserBean(666666L,"梅长苏","男","1997-03-05","12345678"));
+            for (UserBean userBean : userBeanList) {
+                App.getDaoSession().getUserBeanDao().save(userBean);
             }
         }
     }
@@ -148,6 +160,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         "222222",
                         "333333",
                         "444444",
+                        "555555",
+                        "666666",
                 };
                 new AlertDialog.Builder(this)
                         .setSingleChoiceItems(

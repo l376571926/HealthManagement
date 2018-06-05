@@ -1,9 +1,8 @@
 package group.tonight.healthmanagement;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class WalkingHistoryChartActivity extends AppCompatActivity {
+public class WalkingHistoryChartActivity extends BackEnableBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

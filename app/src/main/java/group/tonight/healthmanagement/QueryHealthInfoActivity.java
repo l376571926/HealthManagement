@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,7 +31,7 @@ import group.tonight.healthmanagement.model.UserBean;
 /**
  * 健康信息查询
  */
-public class QueryHealthInfoActivity extends AppCompatActivity {
+public class QueryHealthInfoActivity extends BackEnableBaseActivity {
 
     private RecyclerView mRecyclerView;
     private CustomAdapter mCustomAdapter;
@@ -148,6 +147,7 @@ public class QueryHealthInfoActivity extends AppCompatActivity {
                     }
                     Intent intent = new Intent(QueryHealthInfoActivity.this, HealthInfoHistoryActivity.class);
                     intent.putExtra("bean", healthDataBean);
+                    intent.putExtra("UserBeanId", mUserBeanId);
                     startActivity(intent);
                 }
             }

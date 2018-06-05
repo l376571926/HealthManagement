@@ -1,7 +1,6 @@
 package group.tonight.healthmanagement;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 
@@ -16,7 +15,7 @@ import group.tonight.healthmanagement.model.HealthDataBean;
 /**
  * 健康信息查询结果
  */
-public class HealthInfoHistoryActivity extends AppCompatActivity {
+public class HealthInfoHistoryActivity extends BackEnableBaseActivity {
 
     private RecyclerView mRecyclerView;
 
@@ -29,18 +28,24 @@ public class HealthInfoHistoryActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         mRecyclerView.setAdapter(mBaseQuickAdapter);
 
-        HealthDataBean healthDataBean = (HealthDataBean) getIntent().getSerializableExtra("bean");
-        setTitle(getString(R.string.query_result_title_place_holder, healthDataBean.getTypeName()));
-        List<HealthDataBean> dataBeanList = App.getDaoSession()
-                .getHealthDataBeanDao()
-                .queryBuilder()
-                .where(
-                        HealthDataBeanDao.Properties.BaseData.eq(false),
-                        HealthDataBeanDao.Properties.TypeId.eq(healthDataBean.getId())
-                )
-                .build()
-                .list();
-        mBaseQuickAdapter.setNewData(dataBeanList);
+        if (getIntent().hasExtra("UserBeanId")) {
+            Long userBeanId = getIntent().getLongExtra("UserBeanId", 0L);
+            if (userBeanId != 0) {
+                HealthDataBean healthDataBean = (HealthDataBean) getIntent().getSerializableExtra("bean");
+                setTitle(getString(R.string.query_result_title_place_holder, healthDataBean.getTypeName()));
+                List<HealthDataBean> dataBeanList = App.getDaoSession()
+                        .getHealthDataBeanDao()
+                        .queryBuilder()
+                        .where(
+                                HealthDataBeanDao.Properties.Uid.eq(userBeanId),
+                                HealthDataBeanDao.Properties.BaseData.eq(false),
+                                HealthDataBeanDao.Properties.TypeId.eq(healthDataBean.getId())
+                        )
+                        .build()
+                        .list();
+                mBaseQuickAdapter.setNewData(dataBeanList);
+            }
+        }
     }
 
     private BaseQuickAdapter<HealthDataBean, BaseViewHolder> mBaseQuickAdapter = new BaseQuickAdapter<HealthDataBean, BaseViewHolder>(R.layout.list_item_health_info_detail_history) {

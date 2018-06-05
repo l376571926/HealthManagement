@@ -2,7 +2,6 @@ package group.tonight.healthmanagement;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -34,7 +33,7 @@ import group.tonight.healthmanagement.model.UserBean;
 /**
  * 健康信息录入
  */
-public class AddHealthInfoActivity extends AppCompatActivity {
+public class AddHealthInfoActivity extends BackEnableBaseActivity {
     private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
     private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
     private DecimalFormat mMileageFormat = new DecimalFormat("##.0");

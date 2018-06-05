@@ -1,7 +1,6 @@
 package group.tonight.healthmanagement;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -15,7 +14,7 @@ import group.tonight.healthmanagement.model.UserBean;
 /**
  * 注册
  */
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BackEnableBaseActivity {
 
     private EditText mUserIdView;
     private EditText mUserNameView;
@@ -28,6 +27,11 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//            getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        }
 
         mUserIdView = (EditText) findViewById(R.id.user_id);
         mUserNameView = (EditText) findViewById(R.id.user_name);

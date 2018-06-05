@@ -3,7 +3,6 @@ package group.tonight.healthmanagement;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -18,7 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TargetProgressActivity extends AppCompatActivity {
+public class TargetProgressActivity extends BackEnableBaseActivity {
 
     private RecyclerView mRecyclerView;
     private List<TargetDataBean> mTargetDataBeanList;

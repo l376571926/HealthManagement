@@ -2,7 +2,6 @@ package group.tonight.healthmanagement;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.DatePicker;
@@ -12,7 +11,7 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
-public class TargetSettingActivity extends AppCompatActivity {
+public class TargetSettingActivity extends BackEnableBaseActivity {
 
     private EditText mTargetStepsView;
 
