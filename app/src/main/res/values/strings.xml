@@ -5,4 +5,10 @@
     <string name="height_place_holder">%1$s cm</string>
     <string name="weight_place_holder">%1$s kg</string>
     <string name="query_result_title_place_holder">查询结果(%1$s)</string>
+    <string name="week_average_steps_place_holder">本周平均日步数：%1$d</string>
+    <string name="week_steps_amount_place_holder">本周总步数：%1$d</string>
+    <string name="today_cost_calorie_place_holder">今天消耗能量：%1$f（卡）</string>
+    <string name="today_cost_time_place_holder">今天活跃时间：%1$s</string>
+    <string name="date_place_holder">日期：%1$s</string>
+    <string name="target_place_holder">目标：%1$d(步)</string>
 </resources>

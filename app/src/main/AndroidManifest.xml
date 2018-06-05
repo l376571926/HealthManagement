@@ -23,7 +23,21 @@
         <activity android:name=".AddHealthInfoActivity" />
         <activity android:name=".QueryHealthInfoActivity" />
         <activity android:name=".HealthInfoHistoryActivity" />
-        <activity android:name=".PedometerActivity"></activity>
+        <activity
+            android:name=".PedometerActivity"
+            android:label="计步器" />
+        <activity
+            android:name=".WalkingHistoryActivity"
+            android:label="历史记录" />
+        <activity
+            android:name=".WalkingHistoryChartActivity"
+            android:label="历史折线图" />
+        <activity
+            android:name=".TargetSettingActivity"
+            android:label="新增步行目标" />
+        <activity
+            android:name=".TargetProgressActivity"
+            android:label="目标完成情况" />
     </application>
 
 </manifest>

@@ -54,14 +54,8 @@
 
     <TextView
         android:id="@+id/commit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/selector_custom_button"
-        android:gravity="center"
-        android:text="登录"
-        android:textColor="@android:color/white" />
+        style="@style/custom_normal_button_style"
+        android:text="登录" />
 
     <CheckBox
         android:id="@+id/remember_password"

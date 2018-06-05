@@ -8,35 +8,58 @@
     android:padding="16dp"
     tools:context=".PedometerActivity">
 
-    <TextView
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="今天步数" />
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_pedometer"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="今天步数"
+            android:textColor="@color/secondary_text" />
+
+        <TextView
+            android:id="@+id/today_steps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/primary_text"
+            android:textSize="35sp" />
+    </LinearLayout>
 
     <TextView
+        android:id="@+id/today_cost_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="33"
-        android:textSize="28sp" />
+        android:layout_marginTop="10dp"
+        android:text="@string/today_cost_time_place_holder"
+        android:textColor="@color/primary_text" />
 
     <TextView
+        android:id="@+id/today_cost_calorie"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="今天活跃时间：21秒" />
+        android:text="@string/today_cost_calorie_place_holder"
+        android:textColor="@color/primary_text" />
 
     <TextView
+        android:id="@+id/week_steps_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="今天消耗能量：0.3（卡）" />
+        android:text="@string/week_steps_amount_place_holder"
+        android:textColor="@color/secondary_text" />
 
     <TextView
+        android:id="@+id/week_average_steps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="本周总步数：824" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="本周平均日步数：117" />
+        android:text="@string/week_average_steps_place_holder"
+        android:textColor="@color/secondary_text" />
 
 </LinearLayout>

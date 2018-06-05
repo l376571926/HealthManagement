@@ -21,34 +21,20 @@
 
     <TextView
         android:id="@+id/insert"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="170dp"
-        android:background="@drawable/selector_custom_button"
-        android:gravity="center"
-        android:text="健康信息录入"
-        android:textColor="@android:color/white" />
+        style="@style/custom_normal_button_style"
+        android:layout_marginTop="150dp"
+        android:onClick="onClick"
+        android:text="健康信息录入" />
 
     <TextView
         android:id="@+id/query"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/selector_custom_button"
-        android:gravity="center"
-        android:text="健康信息查询"
-        android:textColor="@android:color/white" />
+        style="@style/custom_normal_button_style"
+        android:onClick="onClick"
+        android:text="健康信息查询" />
 
     <TextView
         android:id="@+id/pedometer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/selector_custom_button"
-        android:gravity="center"
-        android:text="计步器"
-        android:textColor="@android:color/white" />
+        style="@style/custom_normal_button_style"
+        android:onClick="onClick"
+        android:text="计步器" />
 </LinearLayout>

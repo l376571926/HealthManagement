@@ -1,67 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/log_out"
+        android:layout_width="0dp"
         android:layout_height="?android:listPreferredItemHeightSmall"
+        android:layout_weight="1"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:onClick="onClick"
+        android:text="退出登录" />
 
-        <TextView
-            android:id="@+id/history"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="步行历史" />
-
-        <TextView style="@style/default_vertical_divider_line" />
-
-        <TextView
-            android:id="@+id/setting"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="目标设置" />
-    </LinearLayout>
-
-    <TextView style="@style/default_horizontal_divider_line" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="?android:listPreferredItemHeightSmall"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/progress"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="目标完成度" />
-
-        <TextView style="@style/default_vertical_divider_line" />
-
-        <TextView
-            android:id="@+id/log_out"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="退出登录" />
-    </LinearLayout>
-
-    <TextView style="@style/default_horizontal_divider_line" />
+    <TextView style="@style/default_vertical_divider_line" />
 
     <TextView
         android:id="@+id/exit"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="?android:listPreferredItemHeightSmall"
+        android:layout_weight="1"
         android:gravity="center"
+        android:onClick="onClick"
         android:text="退出" />
 </LinearLayout>
