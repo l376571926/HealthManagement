@@ -3,7 +3,6 @@ package group.tonight.healthmanagement;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.BottomSheetDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +10,7 @@ import android.widget.TextView;
 
 import com.socks.library.KLog;
 
-import org.greenrobot.greendao.query.Query;
-
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +22,11 @@ import group.tonight.healthmanagement.model.StepDataBean;
 import group.tonight.healthmanagement.model.UserBean;
 
 public class PedometerActivity extends BaseActivity {
-
+    private static final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+    private static DecimalFormat mDecimalFormat = new DecimalFormat("0.0");
+    private static final double BODY_WEIGHT = 50;//体重kg
+    private static final double WALKING_SPEED = 1.1;//步行速度 m/s
+    private double mKcalSpeed = 30 / (((400 * 1.0f) / WALKING_SPEED) / 60);//分钟/400米
     private UserBean mUser;
     private TextView mTodayStepsView;
     private TextView mTodayCostTimeView;
@@ -32,25 +34,20 @@ public class PedometerActivity extends BaseActivity {
     private TextView mWeekStepsAmountView;
     private TextView mWeekAverageStepsView;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1000) {
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mHandler.sendEmptyMessage(1000);
-                    }
-                }, 1000);
-            }
-        }
-    };
+    private long mActiveSecond;
+    private long mCurrentSteps;
+    private StepDataBean mStepDataBean;
+    private double mCostKcal;
+    private long mWeekStepSum;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pedometer);
+
+        KLog.e(mKcalSpeed);
+
         mTodayStepsView = (TextView) findViewById(R.id.today_steps);
 
         mTodayCostTimeView = (TextView) findViewById(R.id.today_cost_time);
@@ -61,7 +58,7 @@ public class PedometerActivity extends BaseActivity {
 
         //初始化界面数据
         mTodayStepsView.setText(0 + "");
-        mTodayCostTimeView.setText(getString(R.string.today_cost_time_place_holder, 0 + ""));
+        mTodayCostTimeView.setText(getString(R.string.today_cost_time_place_holder, 0));
         mTodayCostCalorieView.setText(getString(R.string.today_cost_calorie_place_holder, 0 + ""));
         mWeekStepsAmountView.setText(getString(R.string.week_steps_amount_place_holder, 0));
         mWeekAverageStepsView.setText(getString(R.string.week_average_steps_place_holder, 0));
@@ -69,21 +66,122 @@ public class PedometerActivity extends BaseActivity {
         if (getIntent().hasExtra(LoginActivity.EXTRA_USER)) {
             mUser = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
 
-            Date time = Calendar.getInstance().getTime();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-            String format = dateFormat.format(time);
+            List<StepDataBean> list = getWeekStepDataBeanList(mUser.getId());
 
-            Query<StepDataBean> beanQuery = App.getDaoSession().getStepDataBeanDao().queryBuilder()
-                    .where(
-                            StepDataBeanDao.Properties.Uid.eq(mUser.getId())
-                            , StepDataBeanDao.Properties.CreateDate.eq(format)
-                    )
-                    .build();
-            List<StepDataBean> list = beanQuery
-                    .list();
             KLog.e();
-
+            StepDataBean stepDataBean = null;
+            for (StepDataBean bean : list) {
+                long createTime = bean.getCreateTime();
+                long steps = bean.getSteps();
+                if (isToday(createTime)) {
+                    stepDataBean = bean;
+                } else {
+                    mWeekStepSum = mWeekStepSum + steps;
+                }
+            }
+            if (stepDataBean == null) {//无当日记录
+                mStepDataBean = new StepDataBean();
+                mStepDataBean.setUid(mUser.getId());
+                mStepDataBean.setCreateTime(System.currentTimeMillis());
+                mStepDataBean.setCreateDate(mDateFormat.format(System.currentTimeMillis()));
+            } else {//有当日记录
+                mStepDataBean = stepDataBean;
+                mCurrentSteps = mStepDataBean.getSteps();
+                mActiveSecond = mStepDataBean.getActiveSeconds();
+                mCostKcal = mStepDataBean.getCalories();
+            }
         }
+    }
+
+    private static SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+    public static List<StepDataBean> getWeekStepDataBeanList(Long id) {
+        Calendar nowCalendar = Calendar.getInstance();
+        KLog.e("当前时间：" + mDateTimeFormat.format(nowCalendar.getTime()));
+
+        Calendar weekStartCalendar = Calendar.getInstance();
+        weekStartCalendar.set(Calendar.DAY_OF_WEEK, 1);
+        long timeInMillis = weekStartCalendar.getTimeInMillis();
+        KLog.e("本周开始时间：" + mDateTimeFormat.format(weekStartCalendar.getTime()));
+
+        Calendar weekEndCalendar = Calendar.getInstance();
+        weekEndCalendar.set(Calendar.DAY_OF_WEEK, 7);
+        long timeInMillis1 = weekEndCalendar.getTimeInMillis();
+        KLog.e("本周结束时间：" + mDateTimeFormat.format(weekEndCalendar.getTime()));
+
+        //查询本周步数记录
+        List<StepDataBean> list = App.getDaoSession().getStepDataBeanDao().queryBuilder()
+                .where(
+                        StepDataBeanDao.Properties.Uid.eq(id),
+                        StepDataBeanDao.Properties.CreateTime.between(timeInMillis, timeInMillis1)
+                )
+                .build()
+                .list();
+        return list;
+    }
+
+    /**
+     * 判断时间是不是今天
+     *
+     * @param millis
+     * @return 是返回true，不是返回false
+     */
+    private static boolean isToday(long millis) {
+        //当前时间
+        Calendar instance = Calendar.getInstance();
+        instance.setTimeInMillis(millis);
+
+        Date now = Calendar.getInstance().getTime();
+
+        //获取今天的日期
+        String nowDay = mDateFormat.format(now);
+        //对比的时间
+        String day = mDateFormat.format(instance.getTime());
+        boolean equals = day.equals(nowDay);
+        return equals;
+    }
+
+    private Handler mHandler = new Handler();
+
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+//            KLog.e(mActiveSecond);
+            mActiveSecond++;
+
+            mCurrentSteps = Math.round(mActiveSecond * WALKING_SPEED);
+            long stepSum = mWeekStepSum + mCurrentSteps;
+            mTodayStepsView.setText(mCurrentSteps + "");
+
+            mTodayCostTimeView.setText(getString(R.string.today_cost_time_place_holder, mActiveSecond));
+
+            //跑步热量（kcal）＝体重（kg）×运动时间（小时）×指数K
+            //指数K＝30÷速度（分钟/400米）
+            //例如：某人体重60公斤，长跑1小时，速度是3分钟/400米或8公里/小时，那么他跑步过程中消耗的热量＝60×1×30/3=600kcal(千卡)
+            //此种计算含盖了运动后由于基础代谢率提高所消耗的一部分热量，也就是运动后体温升高所产生的一部分热量。
+            mCostKcal = BODY_WEIGHT * (mActiveSecond * 1.0f / 3600) * mKcalSpeed;
+            String format = mDecimalFormat.format(mCostKcal);
+            mCostKcal = Double.parseDouble(format);
+            KLog.e(mCostKcal);
+            mTodayCostCalorieView.setText(getString(R.string.today_cost_calorie_place_holder, format));
+
+            mWeekStepsAmountView.setText(getString(R.string.week_steps_amount_place_holder, stepSum));
+            mWeekAverageStepsView.setText(getString(R.string.week_average_steps_place_holder, ((int) (stepSum * 1.0f / 7))));
+
+            mHandler.postDelayed(mRunnable, 1000);
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mHandler.post(mRunnable);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mHandler.removeCallbacks(mRunnable);
     }
 
     @Override
@@ -146,6 +244,10 @@ public class PedometerActivity extends BaseActivity {
                 startActivity(targetProgressIntent);
                 break;
             case R.id.exit:
+                mStepDataBean.setActiveSeconds(mActiveSecond);
+                mStepDataBean.setSteps(mCurrentSteps);
+                mStepDataBean.setCalories(mCostKcal);
+                App.getDaoSession().getStepDataBeanDao().save(mStepDataBean);
                 finish();
                 break;
             default:

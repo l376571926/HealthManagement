@@ -1,16 +1,17 @@
 package group.tonight.healthmanagement.dao;
 
-import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
-import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
+
+import java.util.List;
 
 import group.tonight.healthmanagement.model.StepDataBean;
 
@@ -28,11 +29,12 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Steps = new Property(1, int.class, "steps", false, "STEPS");
-        public final static Property ActiveTime = new Property(2, int.class, "activeTime", false, "ACTIVE_TIME");
-        public final static Property Calories = new Property(3, int.class, "calories", false, "CALORIES");
-        public final static Property CreateDate = new Property(4, int.class, "createDate", false, "CREATE_DATE");
-        public final static Property Uid = new Property(5, Long.class, "uid", false, "UID");
+        public final static Property Steps = new Property(1, long.class, "steps", false, "STEPS");
+        public final static Property ActiveSeconds = new Property(2, long.class, "activeSeconds", false, "ACTIVE_SECONDS");
+        public final static Property Calories = new Property(3, double.class, "calories", false, "CALORIES");
+        public final static Property CreateDate = new Property(4, String.class, "createDate", false, "CREATE_DATE");
+        public final static Property CreateTime = new Property(5, long.class, "createTime", false, "CREATE_TIME");
+        public final static Property Uid = new Property(6, Long.class, "uid", false, "UID");
     }
 
     private Query<StepDataBean> userBean_StepDataBeansQuery;
@@ -51,10 +53,11 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"STEP_DATA_BEAN\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"STEPS\" INTEGER NOT NULL ," + // 1: steps
-                "\"ACTIVE_TIME\" INTEGER NOT NULL ," + // 2: activeTime
-                "\"CALORIES\" INTEGER NOT NULL ," + // 3: calories
-                "\"CREATE_DATE\" INTEGER NOT NULL ," + // 4: createDate
-                "\"UID\" INTEGER);"); // 5: uid
+                "\"ACTIVE_SECONDS\" INTEGER NOT NULL ," + // 2: activeSeconds
+                "\"CALORIES\" REAL NOT NULL ," + // 3: calories
+                "\"CREATE_DATE\" TEXT," + // 4: createDate
+                "\"CREATE_TIME\" INTEGER NOT NULL ," + // 5: createTime
+                "\"UID\" INTEGER);"); // 6: uid
     }
 
     /** Drops the underlying database table. */
@@ -72,13 +75,18 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
             stmt.bindLong(1, id);
         }
         stmt.bindLong(2, entity.getSteps());
-        stmt.bindLong(3, entity.getActiveTime());
-        stmt.bindLong(4, entity.getCalories());
-        stmt.bindLong(5, entity.getCreateDate());
+        stmt.bindLong(3, entity.getActiveSeconds());
+        stmt.bindDouble(4, entity.getCalories());
+ 
+        String createDate = entity.getCreateDate();
+        if (createDate != null) {
+            stmt.bindString(5, createDate);
+        }
+        stmt.bindLong(6, entity.getCreateTime());
  
         Long uid = entity.getUid();
         if (uid != null) {
-            stmt.bindLong(6, uid);
+            stmt.bindLong(7, uid);
         }
     }
 
@@ -91,13 +99,18 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
             stmt.bindLong(1, id);
         }
         stmt.bindLong(2, entity.getSteps());
-        stmt.bindLong(3, entity.getActiveTime());
-        stmt.bindLong(4, entity.getCalories());
-        stmt.bindLong(5, entity.getCreateDate());
+        stmt.bindLong(3, entity.getActiveSeconds());
+        stmt.bindDouble(4, entity.getCalories());
+ 
+        String createDate = entity.getCreateDate();
+        if (createDate != null) {
+            stmt.bindString(5, createDate);
+        }
+        stmt.bindLong(6, entity.getCreateTime());
  
         Long uid = entity.getUid();
         if (uid != null) {
-            stmt.bindLong(6, uid);
+            stmt.bindLong(7, uid);
         }
     }
 
@@ -110,11 +123,12 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
     public StepDataBean readEntity(Cursor cursor, int offset) {
         StepDataBean entity = new StepDataBean( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.getInt(offset + 1), // steps
-            cursor.getInt(offset + 2), // activeTime
-            cursor.getInt(offset + 3), // calories
-            cursor.getInt(offset + 4), // createDate
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5) // uid
+            cursor.getLong(offset + 1), // steps
+            cursor.getLong(offset + 2), // activeSeconds
+            cursor.getDouble(offset + 3), // calories
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // createDate
+            cursor.getLong(offset + 5), // createTime
+            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // uid
         );
         return entity;
     }
@@ -122,11 +136,12 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
     @Override
     public void readEntity(Cursor cursor, StepDataBean entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSteps(cursor.getInt(offset + 1));
-        entity.setActiveTime(cursor.getInt(offset + 2));
-        entity.setCalories(cursor.getInt(offset + 3));
-        entity.setCreateDate(cursor.getInt(offset + 4));
-        entity.setUid(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setSteps(cursor.getLong(offset + 1));
+        entity.setActiveSeconds(cursor.getLong(offset + 2));
+        entity.setCalories(cursor.getDouble(offset + 3));
+        entity.setCreateDate(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setCreateTime(cursor.getLong(offset + 5));
+        entity.setUid(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
      }
     
     @Override

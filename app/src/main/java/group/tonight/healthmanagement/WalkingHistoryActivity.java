@@ -14,15 +14,21 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
+import group.tonight.healthmanagement.dao.StepDataBeanDao;
+import group.tonight.healthmanagement.model.StepDataBean;
 import group.tonight.healthmanagement.model.UserBean;
 
 /**
  * 历史记录
  */
 public class WalkingHistoryActivity extends BackEnableBaseActivity {
+    public static SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     private RecyclerView mRecyclerView;
     private List<WalkingDataBean> mWalkingDataBeanList;
@@ -34,24 +40,8 @@ public class WalkingHistoryActivity extends BackEnableBaseActivity {
         setContentView(R.layout.activity_walking_history);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        if (getIntent().hasExtra(LoginActivity.EXTRA_USER)) {
-            mUserBean = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
-            Long id = mUserBean.getId();
-        }
-
-        mWalkingDataBeanList = new ArrayList<>();
-        mWalkingDataBeanList.add(new WalkingDataBean("2015-03-16", 33, 21, 0.3));
-        mWalkingDataBeanList.add(new WalkingDataBean("2015-03-15", 41, 24, 0.3));
-        mWalkingDataBeanList.add(new WalkingDataBean("2015-03-13", 250, 70, 6.0));
-        mWalkingDataBeanList.add(new WalkingDataBean("2015-03-12", 300, 80, 7.0));
-        mWalkingDataBeanList.add(new WalkingDataBean("2015-03-11", 200, 60, 4.0));
-
         mRecyclerView.setAdapter(mBaseQuickAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-        mBaseQuickAdapter.setNewData(mWalkingDataBeanList);
-
         mBaseQuickAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, final int position) {
@@ -73,6 +63,34 @@ public class WalkingHistoryActivity extends BackEnableBaseActivity {
                         .show();
             }
         });
+        if (getIntent().hasExtra(LoginActivity.EXTRA_USER)) {
+            mUserBean = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
+            Long id = mUserBean.getId();
+
+            List<StepDataBean> list = App.getDaoSession().getStepDataBeanDao().queryBuilder()
+                    .where(
+                            StepDataBeanDao.Properties.Uid.eq(id)
+                    )
+                    .orderDesc(StepDataBeanDao.Properties.CreateTime)
+                    .build()
+                    .list();
+            if (!list.isEmpty()) {
+                mWalkingDataBeanList = new ArrayList<>();
+                Calendar calendar = Calendar.getInstance();
+                for (StepDataBean stepDataBean : list) {
+                    calendar.setTimeInMillis(stepDataBean.getCreateTime());
+                    mWalkingDataBeanList.add(new WalkingDataBean(mDateFormat.format(calendar.getTime()), stepDataBean.getSteps(), stepDataBean.getActiveSeconds(), stepDataBean.getCalories()));
+                }
+//                mWalkingDataBeanList.add(new WalkingDataBean("2015-03-16", 33, 21, 0.3));
+//                mWalkingDataBeanList.add(new WalkingDataBean("2015-03-15", 41, 24, 0.3));
+//                mWalkingDataBeanList.add(new WalkingDataBean("2015-03-13", 250, 70, 6.0));
+//                mWalkingDataBeanList.add(new WalkingDataBean("2015-03-12", 300, 80, 7.0));
+//                mWalkingDataBeanList.add(new WalkingDataBean("2015-03-11", 200, 60, 4.0));
+                mBaseQuickAdapter.setNewData(mWalkingDataBeanList);
+            }
+        }
+
+
     }
 
     @Override
@@ -97,22 +115,22 @@ public class WalkingHistoryActivity extends BackEnableBaseActivity {
     private BaseQuickAdapter<WalkingDataBean, BaseViewHolder> mBaseQuickAdapter = new BaseQuickAdapter<WalkingDataBean, BaseViewHolder>(R.layout.list_item_walking_history) {
         @Override
         protected void convert(BaseViewHolder helper, WalkingDataBean item) {
-            helper.setText(R.id.date, "日期：" + item.getDate());
-            helper.setText(R.id.steps, "步数：" + item.getSteps());
-            helper.setText(R.id.time, "活跃时间：" + item.getTime() + "秒");
-            helper.setText(R.id.cost, "消耗能量：" + item.getCost() + "(卡)");
+            helper.setText(R.id.date, getString(R.string.date_place_holder, item.getDate()));
+            helper.setText(R.id.steps, getString(R.string.step_place_holder, item.getSteps()));
+            helper.setText(R.id.time, getString(R.string.active_second_place_holder, item.getTime()));
+            helper.setText(R.id.cost, getString(R.string.cost_carorie_place_holder, item.getCost() + ""));
         }
     };
 
     public static class WalkingDataBean implements Serializable {
         private static final long serialVersionUID = -1898686036700263915L;
         private String date;
-        private int steps;
+        private long steps;
         private long time;
         private double cost;
 
 
-        public WalkingDataBean(String date, int steps, long time, double cost) {
+        public WalkingDataBean(String date, long steps, long time, double cost) {
             this.date = date;
             this.steps = steps;
             this.time = time;
@@ -127,11 +145,11 @@ public class WalkingHistoryActivity extends BackEnableBaseActivity {
             this.date = date;
         }
 
-        public int getSteps() {
+        public long getSteps() {
             return steps;
         }
 
-        public void setSteps(int steps) {
+        public void setSteps(long steps) {
             this.steps = steps;
         }
 

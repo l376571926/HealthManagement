@@ -12,22 +12,24 @@ public class StepDataBean implements Serializable {
     @Id
     private Long id;
 
-    private int steps;
-    private int activeTime;
-    private int calories;
+    private long steps;
+    private long activeSeconds;
+    private double calories;
 
-    private int createDate;
+    private String createDate;
+    private long createTime;
 
     private Long uid;
 
-    @Generated(hash = 920173518)
-    public StepDataBean(Long id, int steps, int activeTime, int calories,
-            int createDate, Long uid) {
+    @Generated(hash = 1614508586)
+    public StepDataBean(Long id, long steps, long activeSeconds, double calories,
+            String createDate, long createTime, Long uid) {
         this.id = id;
         this.steps = steps;
-        this.activeTime = activeTime;
+        this.activeSeconds = activeSeconds;
         this.calories = calories;
         this.createDate = createDate;
+        this.createTime = createTime;
         this.uid = uid;
     }
 
@@ -43,36 +45,44 @@ public class StepDataBean implements Serializable {
         this.id = id;
     }
 
-    public int getSteps() {
+    public long getSteps() {
         return this.steps;
     }
 
-    public void setSteps(int steps) {
+    public void setSteps(long steps) {
         this.steps = steps;
     }
 
-    public int getActiveTime() {
-        return this.activeTime;
+    public long getActiveSeconds() {
+        return this.activeSeconds;
     }
 
-    public void setActiveTime(int activeTime) {
-        this.activeTime = activeTime;
+    public void setActiveSeconds(long activeSeconds) {
+        this.activeSeconds = activeSeconds;
     }
 
-    public int getCalories() {
+    public double getCalories() {
         return this.calories;
     }
 
-    public void setCalories(int calories) {
+    public void setCalories(double calories) {
         this.calories = calories;
     }
 
-    public int getCreateDate() {
+    public String getCreateDate() {
         return this.createDate;
     }
 
-    public void setCreateDate(int createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
+    }
+
+    public long getCreateTime() {
+        return this.createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
     }
 
     public Long getUid() {

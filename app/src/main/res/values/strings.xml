@@ -8,7 +8,10 @@
     <string name="week_average_steps_place_holder">本周平均日步数：%1$d</string>
     <string name="week_steps_amount_place_holder">本周总步数：%1$d</string>
     <string name="today_cost_calorie_place_holder">今天消耗能量：%1$s（卡）</string>
-    <string name="today_cost_time_place_holder">今天活跃时间：%1$s秒</string>
+    <string name="today_cost_time_place_holder">今天活跃时间：%1$d秒</string>
     <string name="date_place_holder">日期：%1$s</string>
     <string name="target_place_holder">目标：%1$d(步)</string>
+    <string name="step_place_holder">步数：%1$d</string>
+    <string name="active_second_place_holder">活跃时间：%1$d秒</string>
+    <string name="cost_carorie_place_holder">消耗能量：%1$s(卡)</string>
 </resources>
