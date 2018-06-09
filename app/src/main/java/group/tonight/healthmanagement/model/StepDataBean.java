@@ -12,8 +12,8 @@ public class StepDataBean implements Serializable {
     @Id
     private Long id;
 
-    private long steps;
-    private long activeSeconds;
+    private int steps;
+    private int activeSeconds;
     private double calories;
 
     private String createDate;
@@ -21,8 +21,8 @@ public class StepDataBean implements Serializable {
 
     private Long uid;
 
-    @Generated(hash = 1614508586)
-    public StepDataBean(Long id, long steps, long activeSeconds, double calories,
+    @Generated(hash = 1267610559)
+    public StepDataBean(Long id, int steps, int activeSeconds, double calories,
             String createDate, long createTime, Long uid) {
         this.id = id;
         this.steps = steps;
@@ -45,19 +45,19 @@ public class StepDataBean implements Serializable {
         this.id = id;
     }
 
-    public long getSteps() {
+    public int getSteps() {
         return this.steps;
     }
 
-    public void setSteps(long steps) {
+    public void setSteps(int steps) {
         this.steps = steps;
     }
 
-    public long getActiveSeconds() {
+    public int getActiveSeconds() {
         return this.activeSeconds;
     }
 
-    public void setActiveSeconds(long activeSeconds) {
+    public void setActiveSeconds(int activeSeconds) {
         this.activeSeconds = activeSeconds;
     }
 
@@ -92,5 +92,7 @@ public class StepDataBean implements Serializable {
     public void setUid(Long uid) {
         this.uid = uid;
     }
+
+    
 
 }

@@ -9,11 +9,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
+import group.tonight.healthmanagement.dao.TargetDataBeanDao;
+import group.tonight.healthmanagement.model.TargetDataBean;
+import group.tonight.healthmanagement.model.UserBean;
 
 public class TargetSettingActivity extends BackEnableBaseActivity {
 
     private EditText mTargetStepsView;
+    private UserBean mUserBean;
+    private Long mUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +30,16 @@ public class TargetSettingActivity extends BackEnableBaseActivity {
         setContentView(R.layout.activity_target_setting);
 
         mTargetStepsView = (EditText) findViewById(R.id.target_steps);
+
+        if (getIntent().hasExtra(LoginActivity.EXTRA_USER)) {
+            mUserBean = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
+            mUserId = mUserBean.getId();
+//            List<TargetDataBean> targetDataBeans = mUserBean.getTargetDataBeans();
+            // TODO: 2018/6/9 这里getList会报异常
+//            if (targetDataBeans != null) {
+//                KLog.e(targetDataBeans.size());
+//            }
+        }
     }
 
     public void onClick(final View view) {
@@ -44,10 +63,36 @@ public class TargetSettingActivity extends BackEnableBaseActivity {
                 datePickerDialog.show();
                 break;
             case R.id.commit:
-                String string = mTargetStepsView.getText().toString();
-                if (TextUtils.isEmpty(string)) {
+                String targetSteps = mTargetStepsView.getText().toString();
+                if (TextUtils.isEmpty(targetSteps)) {
                     return;
                 }
+                Calendar instance = Calendar.getInstance();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String formatDate = dateFormat.format(instance.getTime());
+                List<TargetDataBean> list = App.getDaoSession()
+                        .getTargetDataBeanDao()
+                        .queryBuilder()
+                        .where(
+                                TargetDataBeanDao.Properties.Uid.eq(mUserId),
+                                TargetDataBeanDao.Properties.Date.eq(formatDate)
+                        )
+                        .build()
+                        .list();
+                TargetDataBean targetDataBean;
+                if (list.isEmpty()) {
+                    targetDataBean = new TargetDataBean();
+                    targetDataBean.setUid(mUserId);
+
+                    targetDataBean.setDate(formatDate);
+                    targetDataBean.setTarget(Integer.parseInt(targetSteps));
+                } else {
+                    targetDataBean = list.get(0);
+                    targetDataBean.setTarget(Integer.parseInt(targetSteps));
+
+                }
+                App.getDaoSession().getTargetDataBeanDao().save(targetDataBean);
+
                 Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
                 finish();
                 break;

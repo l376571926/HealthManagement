@@ -14,4 +14,6 @@
     <string name="step_place_holder">步数：%1$d</string>
     <string name="active_second_place_holder">活跃时间：%1$d秒</string>
     <string name="cost_carorie_place_holder">消耗能量：%1$s(卡)</string>
+    <string name="real_steps_place_holder">实际：%1$d（步）</string>
+    <string name="target_steps_complete_status_place_holder">完成度：%1$s</string>
 </resources>

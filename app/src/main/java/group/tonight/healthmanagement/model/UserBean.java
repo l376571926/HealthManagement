@@ -14,6 +14,7 @@ import group.tonight.healthmanagement.dao.HealthDataBeanDao;
 import group.tonight.healthmanagement.dao.SportDataBeanDao;
 import group.tonight.healthmanagement.dao.UserBeanDao;
 import group.tonight.healthmanagement.dao.StepDataBeanDao;
+import group.tonight.healthmanagement.dao.TargetDataBeanDao;
 
 @Entity
 public class UserBean implements Serializable {
@@ -34,16 +35,23 @@ public class UserBean implements Serializable {
 
     @ToMany(referencedJoinProperty = "uid")
     private List<StepDataBean> stepDataBeans;
-    /** Used to resolve relations */
+
+    @ToMany(referencedJoinProperty = "uid")
+    private List<TargetDataBean> targetDataBeans;
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 83707551)
     private transient UserBeanDao myDao;
 
     @Generated(hash = 1542243779)
     public UserBean(Long id, Long userId, String userName, String gender,
-            String birthday, String password) {
+                    String birthday, String password) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
@@ -135,7 +143,9 @@ public class UserBean implements Serializable {
         return healthDataBeans;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 1311127142)
     public synchronized void resetHealthDataBeans() {
         healthDataBeans = null;
@@ -164,7 +174,9 @@ public class UserBean implements Serializable {
         return sportDataBeans;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 1231188277)
     public synchronized void resetSportDataBeans() {
         sportDataBeans = null;
@@ -206,7 +218,9 @@ public class UserBean implements Serializable {
         myDao.update(this);
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 1491512534)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
@@ -235,10 +249,40 @@ public class UserBean implements Serializable {
         return stepDataBeans;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 49920678)
     public synchronized void resetStepDataBeans() {
         stepDataBeans = null;
+    }
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 973096702)
+    public List<TargetDataBean> getTargetDataBeans() {
+        if (targetDataBeans == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            TargetDataBeanDao targetDao = daoSession.getTargetDataBeanDao();
+            List<TargetDataBean> targetDataBeansNew = targetDao._queryUserBean_TargetDataBeans(id);
+            synchronized (this) {
+                if (targetDataBeans == null) {
+                    targetDataBeans = targetDataBeansNew;
+                }
+            }
+        }
+        return targetDataBeans;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 1574382602)
+    public synchronized void resetTargetDataBeans() {
+        targetDataBeans = null;
     }
 
 }

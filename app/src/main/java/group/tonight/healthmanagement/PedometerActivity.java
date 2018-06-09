@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Locale;
 
 import group.tonight.healthmanagement.dao.StepDataBeanDao;
+import group.tonight.healthmanagement.dao.TargetDataBeanDao;
 import group.tonight.healthmanagement.model.StepDataBean;
+import group.tonight.healthmanagement.model.TargetDataBean;
 import group.tonight.healthmanagement.model.UserBean;
 
 public class PedometerActivity extends BaseActivity {
@@ -34,11 +36,12 @@ public class PedometerActivity extends BaseActivity {
     private TextView mWeekStepsAmountView;
     private TextView mWeekAverageStepsView;
 
-    private long mActiveSecond;
-    private long mCurrentSteps;
+    private int mActiveSecond;
+    private int mCurrentSteps;
     private StepDataBean mStepDataBean;
     private double mCostKcal;
-    private long mWeekStepSum;
+    private int mWeekStepSum;
+    private TargetDataBean mTargetDataBean;
 
 
     @Override
@@ -67,12 +70,24 @@ public class PedometerActivity extends BaseActivity {
             mUser = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
 
             List<StepDataBean> list = getWeekStepDataBeanList(mUser.getId());
-
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
+            Calendar instance = Calendar.getInstance();
+            List<TargetDataBean> targetDataBeanList = App.getDaoSession()
+                    .getTargetDataBeanDao()
+                    .queryBuilder()
+                    .where(
+                            TargetDataBeanDao.Properties.Uid.eq(mUser.getId())
+                            , TargetDataBeanDao.Properties.Date.eq(dateFormat.format(instance.getTime()))
+                    )
+                    .build().list();
+            if (!targetDataBeanList.isEmpty()) {
+                mTargetDataBean = targetDataBeanList.get(0);
+            }
             KLog.e();
             StepDataBean stepDataBean = null;
             for (StepDataBean bean : list) {
                 long createTime = bean.getCreateTime();
-                long steps = bean.getSteps();
+                int steps = bean.getSteps();
                 if (isToday(createTime)) {
                     stepDataBean = bean;
                 } else {
@@ -149,7 +164,7 @@ public class PedometerActivity extends BaseActivity {
 //            KLog.e(mActiveSecond);
             mActiveSecond++;
 
-            mCurrentSteps = Math.round(mActiveSecond * WALKING_SPEED);
+            mCurrentSteps = ((int) Math.round(mActiveSecond * WALKING_SPEED));
             long stepSum = mWeekStepSum + mCurrentSteps;
             mTodayStepsView.setText(mCurrentSteps + "");
 
@@ -182,6 +197,17 @@ public class PedometerActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
         mHandler.removeCallbacks(mRunnable);
+
+        mStepDataBean.setActiveSeconds(mActiveSecond);
+        mStepDataBean.setSteps(mCurrentSteps);
+        mStepDataBean.setCalories(mCostKcal);
+
+        if (mTargetDataBean != null) {
+            mTargetDataBean.setReal(mCurrentSteps);
+            App.getDaoSession().getTargetDataBeanDao().save(mTargetDataBean);
+        }
+
+        App.getDaoSession().getStepDataBeanDao().save(mStepDataBean);
     }
 
     @Override
@@ -244,10 +270,6 @@ public class PedometerActivity extends BaseActivity {
                 startActivity(targetProgressIntent);
                 break;
             case R.id.exit:
-                mStepDataBean.setActiveSeconds(mActiveSecond);
-                mStepDataBean.setSteps(mCurrentSteps);
-                mStepDataBean.setCalories(mCostKcal);
-                App.getDaoSession().getStepDataBeanDao().save(mStepDataBean);
                 finish();
                 break;
             default:

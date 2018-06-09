@@ -24,6 +24,7 @@ public class DaoMaster extends AbstractDaoMaster {
         HealthDataBeanDao.createTable(db, ifNotExists);
         SportDataBeanDao.createTable(db, ifNotExists);
         StepDataBeanDao.createTable(db, ifNotExists);
+        TargetDataBeanDao.createTable(db, ifNotExists);
         UserBeanDao.createTable(db, ifNotExists);
     }
 
@@ -32,6 +33,7 @@ public class DaoMaster extends AbstractDaoMaster {
         HealthDataBeanDao.dropTable(db, ifExists);
         SportDataBeanDao.dropTable(db, ifExists);
         StepDataBeanDao.dropTable(db, ifExists);
+        TargetDataBeanDao.dropTable(db, ifExists);
         UserBeanDao.dropTable(db, ifExists);
     }
 
@@ -54,6 +56,7 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(HealthDataBeanDao.class);
         registerDaoClass(SportDataBeanDao.class);
         registerDaoClass(StepDataBeanDao.class);
+        registerDaoClass(TargetDataBeanDao.class);
         registerDaoClass(UserBeanDao.class);
     }
 

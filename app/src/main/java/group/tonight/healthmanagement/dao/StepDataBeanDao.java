@@ -1,17 +1,16 @@
 package group.tonight.healthmanagement.dao;
 
+import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
+import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
-import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
-
-import java.util.List;
 
 import group.tonight.healthmanagement.model.StepDataBean;
 
@@ -29,8 +28,8 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Steps = new Property(1, long.class, "steps", false, "STEPS");
-        public final static Property ActiveSeconds = new Property(2, long.class, "activeSeconds", false, "ACTIVE_SECONDS");
+        public final static Property Steps = new Property(1, int.class, "steps", false, "STEPS");
+        public final static Property ActiveSeconds = new Property(2, int.class, "activeSeconds", false, "ACTIVE_SECONDS");
         public final static Property Calories = new Property(3, double.class, "calories", false, "CALORIES");
         public final static Property CreateDate = new Property(4, String.class, "createDate", false, "CREATE_DATE");
         public final static Property CreateTime = new Property(5, long.class, "createTime", false, "CREATE_TIME");
@@ -123,8 +122,8 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
     public StepDataBean readEntity(Cursor cursor, int offset) {
         StepDataBean entity = new StepDataBean( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.getLong(offset + 1), // steps
-            cursor.getLong(offset + 2), // activeSeconds
+            cursor.getInt(offset + 1), // steps
+            cursor.getInt(offset + 2), // activeSeconds
             cursor.getDouble(offset + 3), // calories
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // createDate
             cursor.getLong(offset + 5), // createTime
@@ -136,8 +135,8 @@ public class StepDataBeanDao extends AbstractDao<StepDataBean, Long> {
     @Override
     public void readEntity(Cursor cursor, StepDataBean entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSteps(cursor.getLong(offset + 1));
-        entity.setActiveSeconds(cursor.getLong(offset + 2));
+        entity.setSteps(cursor.getInt(offset + 1));
+        entity.setActiveSeconds(cursor.getInt(offset + 2));
         entity.setCalories(cursor.getDouble(offset + 3));
         entity.setCreateDate(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setCreateTime(cursor.getLong(offset + 5));

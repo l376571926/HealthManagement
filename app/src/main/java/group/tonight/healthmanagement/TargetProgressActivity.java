@@ -13,9 +13,12 @@ import android.widget.Toast;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import group.tonight.healthmanagement.dao.TargetDataBeanDao;
+import group.tonight.healthmanagement.model.TargetDataBean;
+import group.tonight.healthmanagement.model.UserBean;
 
 public class TargetProgressActivity extends BackEnableBaseActivity {
 
@@ -31,13 +34,25 @@ public class TargetProgressActivity extends BackEnableBaseActivity {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         mRecyclerView.setAdapter(mBaseQuickAdapter);
-
         mTargetDataBeanList = new ArrayList<>();
-        mTargetDataBeanList.add(new TargetDataBean("2015-03-19", 2100, 0, false));
-        mTargetDataBeanList.add(new TargetDataBean("2015-03-17", 2300, 0, false));
-        mTargetDataBeanList.add(new TargetDataBean("2015-03-15", 25, 41, true));
 
-        mBaseQuickAdapter.setNewData(mTargetDataBeanList);
+        if (getIntent().hasExtra(LoginActivity.EXTRA_USER)) {
+            UserBean userBean = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
+            Long id = userBean.getId();
+            List<TargetDataBean> list = App.getDaoSession()
+                    .getTargetDataBeanDao()
+                    .queryBuilder()
+                    .where(TargetDataBeanDao.Properties.Uid.eq(id))
+                    .build()
+                    .list();
+            if (!list.isEmpty()) {
+                mTargetDataBeanList.addAll(list);
+                mBaseQuickAdapter.setNewData(mTargetDataBeanList);
+            }
+        }
+//        mTargetDataBeanList.add(new TargetDataBean("2015-03-19", 2100, 0, false));
+//        mTargetDataBeanList.add(new TargetDataBean("2015-03-17", 2300, 0, false));
+//        mTargetDataBeanList.add(new TargetDataBean("2015-03-15", 25, 41, true));
         mBaseQuickAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, final int position) {
@@ -82,58 +97,8 @@ public class TargetProgressActivity extends BackEnableBaseActivity {
         protected void convert(BaseViewHolder helper, TargetDataBean item) {
             helper.setText(R.id.date, getString(R.string.date_place_holder, item.getDate()));
             helper.setText(R.id.target, getString(R.string.target_place_holder, item.getTarget()));
-            helper.setText(R.id.real, item.getReal() + "");
-            helper.setText(R.id.status, item.isComplete() + "");
+            helper.setText(R.id.real, getString(R.string.real_steps_place_holder, item.getReal()));
+            helper.setText(R.id.status, getString(R.string.target_steps_complete_status_place_holder, item.getComplete() ? "已完成" : "未完成"));
         }
     };
-
-    public static class TargetDataBean implements Serializable {
-        private static final long serialVersionUID = -1358693082434009891L;
-        private String date;
-        private int target;
-        private int real;
-        private boolean complete;
-
-        public TargetDataBean() {
-        }
-
-        public TargetDataBean(String date, int target, int real, boolean complete) {
-            this.date = date;
-            this.target = target;
-            this.real = real;
-            this.complete = complete;
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public void setDate(String date) {
-            this.date = date;
-        }
-
-        public int getTarget() {
-            return target;
-        }
-
-        public void setTarget(int target) {
-            this.target = target;
-        }
-
-        public int getReal() {
-            return real;
-        }
-
-        public void setReal(int real) {
-            this.real = real;
-        }
-
-        public boolean isComplete() {
-            return complete;
-        }
-
-        public void setComplete(boolean complete) {
-            this.complete = complete;
-        }
-    }
 }

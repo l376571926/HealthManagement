@@ -9,27 +9,27 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="日期：2015-03-19"
+        android:text="@string/date_place_holder"
         android:textColor="@color/primary_text" />
 
     <TextView
         android:id="@+id/target"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="目标：2100（步）"
+        android:text="@string/target_place_holder"
         android:textColor="@color/secondary_text" />
 
     <TextView
         android:id="@+id/real"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="实际：0（步）"
+        android:text="@string/real_steps_place_holder"
         android:textColor="@color/secondary_text" />
 
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="完成度：未完成"
+        android:text="@string/target_steps_complete_status_place_holder"
         android:textColor="@android:color/holo_red_dark" />
 </LinearLayout>
