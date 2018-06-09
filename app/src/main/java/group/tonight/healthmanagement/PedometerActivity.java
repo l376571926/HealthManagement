@@ -70,7 +70,7 @@ public class PedometerActivity extends BaseActivity {
             mUser = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
 
             List<StepDataBean> list = getWeekStepDataBeanList(mUser.getId());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Calendar instance = Calendar.getInstance();
             List<TargetDataBean> targetDataBeanList = App.getDaoSession()
                     .getTargetDataBeanDao()
@@ -204,6 +204,7 @@ public class PedometerActivity extends BaseActivity {
 
         if (mTargetDataBean != null) {
             mTargetDataBean.setReal(mCurrentSteps);
+            mTargetDataBean.setComplete(mCurrentSteps >= mTargetDataBean.getTarget());
             App.getDaoSession().getTargetDataBeanDao().save(mTargetDataBean);
         }
 

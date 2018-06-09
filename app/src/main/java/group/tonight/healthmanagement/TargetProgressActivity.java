@@ -2,6 +2,7 @@ package group.tonight.healthmanagement;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
@@ -68,6 +69,7 @@ public class TargetProgressActivity extends BackEnableBaseActivity {
                         .setNegativeButton("删除", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                App.getDaoSession().getTargetDataBeanDao().delete(mTargetDataBeanList.get(position));
                                 mTargetDataBeanList.remove(position);
                                 mBaseQuickAdapter.notifyItemRemoved(position);
                             }
@@ -99,6 +101,7 @@ public class TargetProgressActivity extends BackEnableBaseActivity {
             helper.setText(R.id.target, getString(R.string.target_place_holder, item.getTarget()));
             helper.setText(R.id.real, getString(R.string.real_steps_place_holder, item.getReal()));
             helper.setText(R.id.status, getString(R.string.target_steps_complete_status_place_holder, item.getComplete() ? "已完成" : "未完成"));
+            helper.setTextColor(R.id.status, item.getComplete() ? ContextCompat.getColor(TargetProgressActivity.this, android.R.color.holo_green_dark) : ContextCompat.getColor(TargetProgressActivity.this, android.R.color.holo_red_dark));
         }
     };
 }
