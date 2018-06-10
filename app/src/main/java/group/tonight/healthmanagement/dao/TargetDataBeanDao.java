@@ -1,16 +1,17 @@
 package group.tonight.healthmanagement.dao;
 
-import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
-import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
+
+import java.util.List;
 
 import group.tonight.healthmanagement.model.TargetDataBean;
 
@@ -32,7 +33,9 @@ public class TargetDataBeanDao extends AbstractDao<TargetDataBean, Long> {
         public final static Property Target = new Property(2, int.class, "target", false, "TARGET");
         public final static Property Real = new Property(3, int.class, "real", false, "REAL");
         public final static Property Complete = new Property(4, boolean.class, "complete", false, "COMPLETE");
-        public final static Property Uid = new Property(5, Long.class, "uid", false, "UID");
+        public final static Property CreateTime = new Property(5, long.class, "createTime", false, "CREATE_TIME");
+        public final static Property UpdateTime = new Property(6, long.class, "updateTime", false, "UPDATE_TIME");
+        public final static Property Uid = new Property(7, Long.class, "uid", false, "UID");
     }
 
     private Query<TargetDataBean> userBean_TargetDataBeansQuery;
@@ -54,7 +57,9 @@ public class TargetDataBeanDao extends AbstractDao<TargetDataBean, Long> {
                 "\"TARGET\" INTEGER NOT NULL ," + // 2: target
                 "\"REAL\" INTEGER NOT NULL ," + // 3: real
                 "\"COMPLETE\" INTEGER NOT NULL ," + // 4: complete
-                "\"UID\" INTEGER);"); // 5: uid
+                "\"CREATE_TIME\" INTEGER NOT NULL ," + // 5: createTime
+                "\"UPDATE_TIME\" INTEGER NOT NULL ," + // 6: updateTime
+                "\"UID\" INTEGER);"); // 7: uid
     }
 
     /** Drops the underlying database table. */
@@ -79,10 +84,12 @@ public class TargetDataBeanDao extends AbstractDao<TargetDataBean, Long> {
         stmt.bindLong(3, entity.getTarget());
         stmt.bindLong(4, entity.getReal());
         stmt.bindLong(5, entity.getComplete() ? 1L: 0L);
+        stmt.bindLong(6, entity.getCreateTime());
+        stmt.bindLong(7, entity.getUpdateTime());
  
         Long uid = entity.getUid();
         if (uid != null) {
-            stmt.bindLong(6, uid);
+            stmt.bindLong(8, uid);
         }
     }
 
@@ -102,10 +109,12 @@ public class TargetDataBeanDao extends AbstractDao<TargetDataBean, Long> {
         stmt.bindLong(3, entity.getTarget());
         stmt.bindLong(4, entity.getReal());
         stmt.bindLong(5, entity.getComplete() ? 1L: 0L);
+        stmt.bindLong(6, entity.getCreateTime());
+        stmt.bindLong(7, entity.getUpdateTime());
  
         Long uid = entity.getUid();
         if (uid != null) {
-            stmt.bindLong(6, uid);
+            stmt.bindLong(8, uid);
         }
     }
 
@@ -122,7 +131,9 @@ public class TargetDataBeanDao extends AbstractDao<TargetDataBean, Long> {
             cursor.getInt(offset + 2), // target
             cursor.getInt(offset + 3), // real
             cursor.getShort(offset + 4) != 0, // complete
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5) // uid
+            cursor.getLong(offset + 5), // createTime
+            cursor.getLong(offset + 6), // updateTime
+            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7) // uid
         );
         return entity;
     }
@@ -134,7 +145,9 @@ public class TargetDataBeanDao extends AbstractDao<TargetDataBean, Long> {
         entity.setTarget(cursor.getInt(offset + 2));
         entity.setReal(cursor.getInt(offset + 3));
         entity.setComplete(cursor.getShort(offset + 4) != 0);
-        entity.setUid(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setCreateTime(cursor.getLong(offset + 5));
+        entity.setUpdateTime(cursor.getLong(offset + 6));
+        entity.setUid(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
      }
     
     @Override

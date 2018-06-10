@@ -13,18 +13,19 @@ import com.socks.library.KLog;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import group.tonight.healthmanagement.dao.StepDataBeanDao;
-import group.tonight.healthmanagement.dao.TargetDataBeanDao;
 import group.tonight.healthmanagement.model.StepDataBean;
 import group.tonight.healthmanagement.model.TargetDataBean;
 import group.tonight.healthmanagement.model.UserBean;
 
+/**
+ * 计步器
+ */
 public class PedometerActivity extends BaseActivity {
-    private static final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+    private static final SimpleDateFormat mStepDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
     private static DecimalFormat mDecimalFormat = new DecimalFormat("0.0");
     private static final double BODY_WEIGHT = 50;//体重kg
     private static final double WALKING_SPEED = 1.1;//步行速度 m/s
@@ -69,36 +70,25 @@ public class PedometerActivity extends BaseActivity {
         if (getIntent().hasExtra(LoginActivity.EXTRA_USER)) {
             mUser = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
 
+            mTargetDataBean = MyDAOUtils.getTodaysTargetDataBean(mUser.getId());
+
+            //获取本周步数记录
             List<StepDataBean> list = getWeekStepDataBeanList(mUser.getId());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            Calendar instance = Calendar.getInstance();
-            List<TargetDataBean> targetDataBeanList = App.getDaoSession()
-                    .getTargetDataBeanDao()
-                    .queryBuilder()
-                    .where(
-                            TargetDataBeanDao.Properties.Uid.eq(mUser.getId())
-                            , TargetDataBeanDao.Properties.Date.eq(dateFormat.format(instance.getTime()))
-                    )
-                    .build().list();
-            if (!targetDataBeanList.isEmpty()) {
-                mTargetDataBean = targetDataBeanList.get(0);
-            }
-            KLog.e();
-            StepDataBean stepDataBean = null;
             for (StepDataBean bean : list) {
                 long createTime = bean.getCreateTime();
                 int steps = bean.getSteps();
-                if (isToday(createTime)) {
-                    stepDataBean = bean;
-                } else {
+                if (!isToday(createTime)) {
                     mWeekStepSum = mWeekStepSum + steps;
                 }
             }
+
+            //获取当天步数记录
+            StepDataBean stepDataBean = MyDAOUtils.getTodaysStepDataBean(mUser.getId());
             if (stepDataBean == null) {//无当日记录
                 mStepDataBean = new StepDataBean();
                 mStepDataBean.setUid(mUser.getId());
                 mStepDataBean.setCreateTime(System.currentTimeMillis());
-                mStepDataBean.setCreateDate(mDateFormat.format(System.currentTimeMillis()));
+                mStepDataBean.setCreateDate(mStepDateFormat.format(Calendar.getInstance().getTime()));
             } else {//有当日记录
                 mStepDataBean = stepDataBean;
                 mCurrentSteps = mStepDataBean.getSteps();
@@ -116,12 +106,22 @@ public class PedometerActivity extends BaseActivity {
 
         Calendar weekStartCalendar = Calendar.getInstance();
         weekStartCalendar.set(Calendar.DAY_OF_WEEK, 1);
+        weekStartCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        weekStartCalendar.set(Calendar.MINUTE, 0);
+        weekStartCalendar.set(Calendar.SECOND, 0);
+        weekStartCalendar.set(Calendar.MILLISECOND, 0);
         long timeInMillis = weekStartCalendar.getTimeInMillis();
+
         KLog.e("本周开始时间：" + mDateTimeFormat.format(weekStartCalendar.getTime()));
 
         Calendar weekEndCalendar = Calendar.getInstance();
         weekEndCalendar.set(Calendar.DAY_OF_WEEK, 7);
+        weekEndCalendar.set(Calendar.HOUR_OF_DAY, 11);
+        weekEndCalendar.set(Calendar.MINUTE, 59);
+        weekEndCalendar.set(Calendar.SECOND, 59);
+        weekEndCalendar.set(Calendar.MILLISECOND, 0);
         long timeInMillis1 = weekEndCalendar.getTimeInMillis();
+
         KLog.e("本周结束时间：" + mDateTimeFormat.format(weekEndCalendar.getTime()));
 
         //查询本周步数记录
@@ -142,16 +142,15 @@ public class PedometerActivity extends BaseActivity {
      * @return 是返回true，不是返回false
      */
     private static boolean isToday(long millis) {
-        //当前时间
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        //要比较的时间
         Calendar instance = Calendar.getInstance();
         instance.setTimeInMillis(millis);
 
-        Date now = Calendar.getInstance().getTime();
-
         //获取今天的日期
-        String nowDay = mDateFormat.format(now);
+        String nowDay = dateFormat.format(Calendar.getInstance().getTime());
         //对比的时间
-        String day = mDateFormat.format(instance.getTime());
+        String day = dateFormat.format(instance.getTime());
         boolean equals = day.equals(nowDay);
         return equals;
     }

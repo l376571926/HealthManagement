@@ -25,7 +25,7 @@ public class App extends Application {
     }
 
     public static DaoSession getDaoSession() {
-        daoSession.clear();
+//        daoSession.clear();
         return daoSession;
     }
 }

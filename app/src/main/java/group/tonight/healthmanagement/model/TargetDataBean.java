@@ -1,10 +1,16 @@
 package group.tonight.healthmanagement.model;
 
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.ToOne;
 
 import java.io.Serializable;
+
+import group.tonight.healthmanagement.dao.DaoSession;
+import group.tonight.healthmanagement.dao.StepDataBeanDao;
+import group.tonight.healthmanagement.dao.TargetDataBeanDao;
 
 @Entity
 public class TargetDataBean implements Serializable {
@@ -16,16 +22,20 @@ public class TargetDataBean implements Serializable {
     private int real;
     private boolean complete;
 
-    private Long uid;
+    private long createTime;
+    private long updateTime;
 
-    @Generated(hash = 1735468710)
+    private Long uid;
+    @Generated(hash = 745056080)
     public TargetDataBean(Long id, String date, int target, int real,
-                          boolean complete, Long uid) {
+            boolean complete, long createTime, long updateTime, Long uid) {
         this.id = id;
         this.date = date;
         this.target = target;
         this.real = real;
         this.complete = complete;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
         this.uid = uid;
     }
 
@@ -73,6 +83,22 @@ public class TargetDataBean implements Serializable {
         this.complete = complete;
     }
 
+    public long getCreateTime() {
+        return this.createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public long getUpdateTime() {
+        return this.updateTime;
+    }
+
+    public void setUpdateTime(long updateTime) {
+        this.updateTime = updateTime;
+    }
+
     public Long getUid() {
         return this.uid;
     }
@@ -80,5 +106,4 @@ public class TargetDataBean implements Serializable {
     public void setUid(Long uid) {
         this.uid = uid;
     }
-
 }

@@ -9,36 +9,39 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 
-import group.tonight.healthmanagement.dao.TargetDataBeanDao;
+import group.tonight.healthmanagement.model.StepDataBean;
 import group.tonight.healthmanagement.model.TargetDataBean;
 import group.tonight.healthmanagement.model.UserBean;
 
 public class TargetSettingActivity extends BackEnableBaseActivity {
 
     private EditText mTargetStepsView;
-    private UserBean mUserBean;
     private Long mUserId;
+    private TextView mSelectDateView;
+    private TargetDataBean mTargetDataBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_target_setting);
 
+        mSelectDateView = (TextView) findViewById(R.id.select_date);
         mTargetStepsView = (EditText) findViewById(R.id.target_steps);
 
         if (getIntent().hasExtra(LoginActivity.EXTRA_USER)) {
-            mUserBean = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
+            UserBean mUserBean = (UserBean) getIntent().getSerializableExtra(LoginActivity.EXTRA_USER);
             mUserId = mUserBean.getId();
-//            List<TargetDataBean> targetDataBeans = mUserBean.getTargetDataBeans();
-            // TODO: 2018/6/9 这里getList会报异常
-//            if (targetDataBeans != null) {
-//                KLog.e(targetDataBeans.size());
-//            }
+            if (getIntent().hasExtra("modify")) {
+                mTargetDataBean = (TargetDataBean) getIntent().getSerializableExtra("modify");
+                String date = mTargetDataBean.getDate();
+                int target = mTargetDataBean.getTarget();
+
+                mSelectDateView.setText(date);
+                mTargetStepsView.setText(target + "");
+                mSelectDateView.setEnabled(false);
+            }
         }
     }
 
@@ -63,35 +66,40 @@ public class TargetSettingActivity extends BackEnableBaseActivity {
                 datePickerDialog.show();
                 break;
             case R.id.commit:
-                String targetSteps = mTargetStepsView.getText().toString();
-                if (TextUtils.isEmpty(targetSteps)) {
+                String dateStr = mSelectDateView.getText().toString();//2018-06-08
+                if (dateStr.contains("请")) {
+                    Toast.makeText(this, "请选择日期", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Calendar instance = Calendar.getInstance();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                String formatDate = dateFormat.format(instance.getTime());
-                List<TargetDataBean> list = App.getDaoSession()
-                        .getTargetDataBeanDao()
-                        .queryBuilder()
-                        .where(
-                                TargetDataBeanDao.Properties.Uid.eq(mUserId),
-                                TargetDataBeanDao.Properties.Date.eq(formatDate)
-                        )
-                        .build()
-                        .list();
-                TargetDataBean targetDataBean;
-                if (list.isEmpty()) {
-                    targetDataBean = new TargetDataBean();
-                    targetDataBean.setUid(mUserId);
-
-                    targetDataBean.setDate(formatDate);
-                    targetDataBean.setTarget(Integer.parseInt(targetSteps));
-                } else {
-                    targetDataBean = list.get(0);
-                    targetDataBean.setTarget(Integer.parseInt(targetSteps));
-
+                String targetSteps = mTargetStepsView.getText().toString();
+                if (TextUtils.isEmpty(targetSteps)) {
+                    Toast.makeText(this, "请输入目标步数", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                App.getDaoSession().getTargetDataBeanDao().save(targetDataBean);
+                int targetStep = Integer.parseInt(targetSteps);
+
+                if (mTargetDataBean == null) {
+                    //查找当前数据库中是否有选中日期的目标目标步数设置数据，有就更新，没有就创建
+                    mTargetDataBean = MyDAOUtils.getTargetDataBean(mUserId, dateStr);
+                    if (mTargetDataBean == null) {
+                        mTargetDataBean = new TargetDataBean();
+                        mTargetDataBean.setUid(mUserId);
+
+                        mTargetDataBean.setDate(dateStr);
+                        mTargetDataBean.setCreateTime(System.currentTimeMillis());
+                    }
+                }
+                mTargetDataBean.setTarget(targetStep);
+                mTargetDataBean.setUpdateTime(System.currentTimeMillis());
+                //查找所选日期当天的步数数据，如果有，则对比目标目标步数，并设置是否已完成
+                StepDataBean stepDataBean = MyDAOUtils.getStepDataBean(mUserId, dateStr.replace("-", ""));
+                if (stepDataBean != null) {
+                    int steps = stepDataBean.getSteps();
+                    int target = mTargetDataBean.getTarget();
+                    mTargetDataBean.setReal(steps);
+                    mTargetDataBean.setComplete(steps >= target);
+                }
+                App.getDaoSession().getTargetDataBeanDao().save(mTargetDataBean);
 
                 Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
                 finish();
